@@ -95,5 +95,28 @@ int kv_put(kv_t *db, char *key, char *value) {
     return -1;
 }
 
+char *kv_get(kv_t *db, char *key) {
+    if( !db || !key) return NULL;
+
+    size_t idx = hash(key, db->capacity);
+
+    for (int i = 0; i < db->capacity; i++) {
+        size_t real_idx = (idx + 1) % db->capacity;
+
+        kv_entry_t *entry = &db->entries[real_idx];
+
+        // no
+        if (entry->key == NULL) {
+            return NULL;
+        }
+
+        // find entry and keys match
+        if(entry->key && entry->key != (void *)TOMBSTONE && !strcmp(entry->key, key)) {
+            return entry->value;
+        }
+    }
+
+    return NULL;
+}
 
 
