@@ -42,7 +42,7 @@ size_t hash(const char *value, int capacity) {
 //  key : pointer to the key val
 //  value : ponter to value itself
 //returns: index of the key, otherwise -1 on err and -2 not found
-int kv_put(kv_t *db, const char *key, const char *value) {
+int kv_put(kv_t *db, char *key, char *value) {
     if (!db || !key || !value) {
         return -1;
     }
@@ -71,8 +71,8 @@ int kv_put(kv_t *db, const char *key, const char *value) {
         //land in a slot that is empty
         //null or tombstone
         if(!entry -> key || entry->key == (void*)TOMBSTONE) {
-            const char *newval = strdup(value);
-            const char *newkey = strdup(key);
+            char *newval = strdup(value);
+            char *newkey = strdup(key);
 
             if (!newval || !newkey) {
                 free(newkey);
