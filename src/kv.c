@@ -119,4 +119,58 @@ char *kv_get(kv_t *db, char *key) {
     return NULL;
 }
 
+int kv_delete(kv_t *db, char *key) {
+    if (!db || !key) return -1;
 
+    size_t idx = hash(key, db->capacity);
+
+    for(int i = 0; i < db->capacity; i++) {
+        size_t real_idx = (idx +1) % db->capacity;
+
+        kv_entry_t *entry = &db->entries[real_idx];
+
+        // no
+        if (entry->key == NULL) {
+            return -1;
+        }
+
+        // find entry and keys match
+        if(entry->key && 
+            entry->key != (void *)TOMBSTONE && 
+            !strcmp(entry->key, key)
+        ) {
+            free(entry->key);
+            free(entry->value);
+            db->count--;
+            entry->key = (void *)TOMBSTONE;
+            entry->value = NULL;
+
+            return real_idx;
+        }
+
+    }
+
+    return -1;
+}
+
+int kv_free(kv_t *db) {
+
+    if (!db) return -1;
+
+    for (int i =0; i < db->capacity; i++) {
+        kv_entry_t *e = &db->entries[i];
+
+        if(e->key && e->key != (void *)TOMBSTONE) {
+            free(e->key);
+            free(e->value);
+            e->key = NULL;
+            e->value = NULL;
+            db->count--;
+        }
+    }
+
+    free(db->entries);
+    free(db);
+
+    return 0;
+}
