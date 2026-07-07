@@ -71,8 +71,8 @@ int kv_put(kv_t *db, const char *key, const char *value) {
         //land in a slot that is empty
         //null or tombstone
         if(!entry -> key || entry->key == (void*)TOMBSTONE) {
-            char *newval = (char *)strdup(value);
-            char *newkey = (char *)strdup(key);
+            char *newval = strdup(value);
+            char *newkey = strdup(key);
 
             if (!newval || !newkey) {
                 free(newkey);
