@@ -144,12 +144,13 @@ int kv_delete(kv_t *db, char *key) {
             entry->key = (void *)TOMBSTONE;
             entry->value = NULL;
 
-            return real_idx;
+            //return real_idx;
+            return 0;
         }
 
     }
 
-    return 0;
+    return -1;
 }
 
 void kv_free(kv_t *db) {
