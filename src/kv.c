@@ -2,8 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define TOMBSTONE 0x1
-
 kv_t *kv_init(size_t capacity) {
 
     if (capacity == 0) return NULL;
@@ -24,7 +22,7 @@ kv_t *kv_init(size_t capacity) {
     return table;
 }
 
-size_t hash(char *value, int capacity) {
+size_t hash(const char *value, int capacity) {
     size_t hash = 0x13371337deadbeef;
 
     while(*value) {
@@ -44,7 +42,7 @@ size_t hash(char *value, int capacity) {
 //  key : pointer to the key val
 //  value : ponter to value itself
 //returns: index of the key, otherwise -1 on err and -2 not found
-int kv_put(kv_t *db, char *key, char *value) {
+int kv_put(kv_t *db, const char *key, const char *value) {
     if (!db || !key || !value) {
         return -1;
     }
@@ -94,7 +92,7 @@ int kv_put(kv_t *db, char *key, char *value) {
     return -1;
 }
 
-char *kv_get(kv_t *db, char *key) {
+char *kv_get(kv_t *db, const char *key) {
     if( !db || !key) return NULL;
 
     size_t idx = hash(key, db->capacity);
@@ -118,7 +116,7 @@ char *kv_get(kv_t *db, char *key) {
     return NULL;
 }
 
-int kv_delete(kv_t *db, char *key) {
+int kv_delete(kv_t *db, const char *key) {
     if (!db || !key) return -1;
 
     size_t idx = hash(key, db->capacity);
@@ -152,9 +150,7 @@ int kv_delete(kv_t *db, char *key) {
     return 0;
 }
 
-int kv_free(kv_t *db) {
-
-    if (!db) return -1;
+void kv_free(kv_t *db) {
 
     for (int i =0; i < db->capacity; i++) {
         kv_entry_t *e = &db->entries[i];
@@ -171,5 +167,4 @@ int kv_free(kv_t *db) {
     free(db->entries);
     free(db);
 
-    return 0;
 }
