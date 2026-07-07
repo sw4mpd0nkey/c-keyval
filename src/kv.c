@@ -6,9 +6,7 @@
 
 kv_t *kv_init(size_t capacity) {
 
-    if (capacity == 0) {
-        return NULL;
-    }
+    if (capacity == 0) return NULL;
 
     kv_t *table = malloc(sizeof(kv_t));
     if (table == NULL) {
@@ -67,6 +65,7 @@ int kv_put(kv_t *db, char *key, char *value) {
             if (!newval) {
                 return -1;
             }
+            free(entry->value);
             entry->value = newval;
             return real_idx;
         }
@@ -150,7 +149,7 @@ int kv_delete(kv_t *db, char *key) {
 
     }
 
-    return -1;
+    return 0;
 }
 
 int kv_free(kv_t *db) {
