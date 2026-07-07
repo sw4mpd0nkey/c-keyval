@@ -152,7 +152,7 @@ int kv_delete(kv_t *db, const char *key) {
 
 void kv_free(kv_t *db) {
 
-    for (size_t = 0; i < db->capacity; i++) {
+    for (size_t i = 0; i < db->capacity; i++) {
         kv_entry_t *e = &db->entries[i];
 
         if(e->key && e->key != (void *)TOMBSTONE) {
