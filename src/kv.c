@@ -92,7 +92,7 @@ int kv_put(kv_t *db, char *key, char *value) {
     return -1;
 }
 
-char *kv_get(kv_t *db, const char *key) {
+char *kv_get(kv_t *db, char *key) {
     if( !db || !key) return NULL;
 
     size_t idx = hash(key, db->capacity);
@@ -116,7 +116,7 @@ char *kv_get(kv_t *db, const char *key) {
     return NULL;
 }
 
-int kv_delete(kv_t *db, const char *key) {
+int kv_delete(kv_t *db, char *key) {
     if (!db || !key) return -1;
 
     size_t idx = hash(key, db->capacity);
