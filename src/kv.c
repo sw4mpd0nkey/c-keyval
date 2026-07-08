@@ -51,27 +51,36 @@ int kv_put(kv_t *db, char *key, char *value) {
 
     for(size_t i = 0; i < db->capacity -1; i++) {
 
-        size_t real_idx = (idx + 1) % db->capacity;
+        size_t real_idx = (idx + i) % db->capacity;
         
         kv_entry_t *entry = &db->entries[real_idx];
 
         // key is already set, updating
-        if (entry->key && entry->key != (void*)TOMBSTONE
-            && !strcmp(entry->key,key)) {
-            
-            char *newval = strdup(value);
-            if (!newval) {
-                return -1;
-            }
-            free(entry->value);
-            entry->value = newval;
-            //return real_idx;
-            return 0;
+        if (entry->key && 
+            entry->key != (void *)TOMBSTONE &&
+            strcmp(entry->key, key) == 0
+        ) {
+
+          char *newval = strdup(value);
+          char *newkey = strdup(key);
+
+          if (!newval || !newkey)
+            return -1;
+
+          free(entry->key);
+          free(entry->value);
+
+          entry->key = newkey;
+          entry->value = newval;
+
+          // return real_idx;
+          return 0;
         }
 
         //land in a slot that is empty
         //null or tombstone
         if(!entry -> key || entry->key == (void*)TOMBSTONE) {
+
             char *newval = strdup(value);
             char *newkey = strdup(key);
 
@@ -85,6 +94,7 @@ int kv_put(kv_t *db, char *key, char *value) {
             entry->value = newval;
             entry->key = newkey;
             db->count++;
+
             //return real_idx;
             return 0;
         }
@@ -96,12 +106,12 @@ int kv_put(kv_t *db, char *key, char *value) {
 
 char *kv_get(kv_t *db, char *key) {
     if( !db || !key) return NULL;
-
+    
     size_t idx = hash(key, db->capacity);
-
+    
     for (size_t i = 0; i < db->capacity; i++) {
-        size_t real_idx = (idx + 1) % db->capacity;
-
+        
+        size_t real_idx = (idx + i) % db->capacity;
         kv_entry_t *entry = &db->entries[real_idx];
 
         // no
@@ -110,7 +120,11 @@ char *kv_get(kv_t *db, char *key) {
         }
 
         // find entry and keys match
-        if(entry->key && entry->key != (void *)TOMBSTONE && !strcmp(entry->key, key)) {
+        if(entry->key && 
+            entry->key != (void *)TOMBSTONE && 
+            strcmp(entry->key, key) == 0
+        ) {
+        
             return entry->value;
         }
     }
@@ -124,7 +138,7 @@ int kv_delete(kv_t *db, char *key) {
     size_t idx = hash(key, db->capacity);
 
     for(size_t i = 0; i < db->capacity; i++) {
-        size_t real_idx = (idx +1) % db->capacity;
+        size_t real_idx = (idx + i) % db->capacity;
 
         kv_entry_t *entry = &db->entries[real_idx];
 
@@ -136,7 +150,7 @@ int kv_delete(kv_t *db, char *key) {
         // find entry and keys match
         if(entry->key && 
             entry->key != (void *)TOMBSTONE && 
-            !strcmp(entry->key, key)
+            strcmp(entry->key, key) == 0
         ) {
             free(entry->key);
             free(entry->value);
